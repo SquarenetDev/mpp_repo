@@ -1,0 +1,218 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='static_content.html'/>
+<%!
+from django.utils.translation import ugettext as _
+from courseware.courses import get_course
+import logging
+%>
+
+
+<script>
+
+$(document).ready(function(){
+   checkNoticePop(); 
+});
+
+function openNoticePop(el, result){
+
+        var $el = $(el);        //레이어의 id를 $el 변수에 저장
+
+        var isDim = $el.parent().hasClass('modal');   //dimmed 레이어를 감지하기 위한 boolean 변수
+        isDim ? $('.modal').fadeIn() : $el.fadeIn();
+	
+            // 레이어에 가져온 내용 반영
+       $('.popup .con h3').html(result.title);
+        var linkHtmlStr = '';
+
+        if( result.detail_url != null && result.detail_url != ""){
+	    $("#show-detail").attr("href",result.detail_url).css("display","block");
+        }
+	
+	$(".con .txt").html(result.contents);
+
+
+        $(document).on('click', '#displayChk', function(){
+            if( $('#displayChk').prop("checked") ){
+                    setCookie(basicName+$('#noticeId_noticeLayer').val(), "N", 365);
+                    $el.find('.close').trigger('click');  
+            }
+        });
+ 	$(".modal").addClass("active");
+   }
+
+    var basicName = "showCookies_"; //쿠키 공통 명칭
+
+    //가장 최근에 업데이트된 팝업 설정한 공지사항 가져옴. (쿠키에서 가져온 하루동안 보지 않기 설정한 공지 id 제외(
+    function checkNoticePop(){
+            var idArr = new Array();
+            var idListStr = "";
+
+            var cookieSplArr = document.cookie.split(';');
+            for( var i = 0; i < cookieSplArr.length; ++i ){
+                var cookiePart = cookieSplArr[i];
+                while( cookiePart.charAt(0) == ' ' )
+                    cookiePart = cookiePart.substring(1);
+                cookiePart = cookiePart.substring(0, cookiePart.indexOf('='));
+                cookiePart = cookiePart.substring(basicName.length);
+                idArr.push(cookiePart);
+            }
+        
+        for(var i = 0; i < idArr.length; ++i ){
+            if( i == idArr.length*1-1 )
+            idListStr += idArr[i];
+            else
+            idListStr += (idArr[i]+',');
+        }
+
+        //조건에 맞는 공지사항 요청
+        $.ajax({
+            url: "/customApi/checkPopup/",
+            method: "POST",
+            data: {
+                'idList': idListStr
+            },
+            success: function(result){
+//                console.log(result);
+//                console.log(result.id);
+                if(result.id != null && result.id != ""){
+                    $('#noticeId_noticeLayer').val(result.id);
+            	    $("body, html").css("overflow-y","hidden");
+                    if(getCookie(basicName+$("#noticeId_noticeLayer").val()) != "N")
+                        openNoticePop('#layer2', result);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+//                console.log(jqXHR, textStatus, errorThrown);
+            }
+        });
+    }
+    
+    function setCookie(cname, cvalue, exdays) {
+                var d = new Date();
+                d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                var expires = "expires=" + d.toUTCString();
+                document.cookie = cname + "=" + cvalue + "; " + expires + '; Path=/;';
+        }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') 
+                c = c.substring(1);
+                        if (c.indexOf(name) == 0)
+                return c.substring(name.length, c.length);
+                }
+                return "";
+        }
+
+    function delete_cookie(name) {
+                document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+
+    function openNoticeDetail(){
+        var noticeId = $('#noticeId_noticeLayer').val();
+        var urlBase = "/notice_detail?noticeId=";
+        location.href = urlBase + noticeId;
+    }
+</script>
+
+<style>
+/**************
+팝업
+**************/
+	
+.modal{ position: fixed; left:0; top:0; display:inline-block;z-index:10; display:none }
+.modal.active{ display:block}
+.modal.bg{ background:rgba(0,20,20,0.88); width:100%; height:100%}
+.modal .popup{ border:1px solid #000; background:#fff; overflow:hidden; padding:0px; position:absolute; left:50%; top:50%; width:620px; max-height:600px; overflow-y:auto; border-radius: 20px }
+.modal.bg .popup{ transform:translate(-50%,-50%)}
+.modal h2{ color:#fff; font-size:2rem; font-weight:300; letter-spacing:-2px; margin:0; padding:15px 20px 15px 30px; background: #1790c7; position: relative}
+.modal h2 strong{ font-weight:300; }
+.modal h2:after{display: block; width: 100%; height:7px; content: ""; background: rgba(1, 174, 277,0.57); position: absolute; left: 0; bottom: -7px; } 
+.modal .popfoot{text-align:right; padding:25px;background: rgba(30,30,30,0.105);}
+.modal .popfoot .close{ font-size:13px; line-height:30px; padding:0 15px; border:none; background:#ed4043; color:#fff; font-weight:500;box-shadow: none;}
+.modal .popfoot label{ color:#000; font-weight:400; font-size:1rem; padding-right:10px }
+.modal .popup > .close{ position:absolute; right:20px; top:20px; border:none; background:none}
+.modal .popup > .close svg{transform: scale(1.4) } 
+.modal .popup > .close path{fill:#fff}
+.modal p{ font-weight:300; letter-spacing: 0.01rem;font-size:13px;}
+.modal p strong{font-weight: 700; color:#01aeb2 } 
+.modal div.txt p strong{ color: #000; font-size: 1.15rem} 
+.modal .popup .con{ padding: 30px} 
+.modal .popup .con h3{ color:  #000000; font-size: 1.1rem; border-bottom: 1px solid  #000000; margin: 0; padding: 10px 0 10px 0; margin-bottom: 20px} 
+.blind {display: block;	overflow: hidden;position: absolute !important;	left: -9999px;	width: 1px;	height: 1px;font-size: 0;line-height: 0;	text-indent: -9999px;}
+div#layer2 * {font-family:'Noto Sans KR', sans-serif !important;}
+div#layer2 label {font:inherit;font-size:13px;display:inline-block;margin-top:8px;}
+div#layer2 label input {vertical-align:middle;}
+/**************
+팝업
+**************/
+
+/*
+.modal{ position: fixed; left:0; top:0; display:inline-block;z-index:10; display:none }
+.modal.active{ display:block}
+.modal.bg{ background:rgba(0,20,20,0.88); width:100%; height:100%}
+.modal .popup{ border:1px solid #ddd; background:#fff; overflow:hidden; padding:20px; position:absolute; left:50%; top:50%; width:500px; max-height:600px;}
+.modal.bg .popup{ transform:translate(-50%,-50%)}
+.modal h2{ color:#525252; font-size:1.714rem; font-weight:500; letter-spacing:-1px; margin:0; padding:0 0 5px 0; border-bottom:1px solid #a8a8a8}
+.modal h2 strong{ font-weight:700; }
+
+.modal .popfoot{border-top:1px solid #a8a8a8 ; text-align:right; padding-top:20px}
+.modal .popfoot .close{ font-size:12px; line-height:25px; padding:0 10px; border:1px solid #000; background:#fff; color:#000; font-weight:500}
+.modal .popfoot label{ color:#000; font-weight:500; font-size:12px; padding-right:10px }
+.modal .popup > .close{ position:absolute; right:20px; top:20px; border:none; background:none}
+.modal p{ font-weight:300}
+.blind {display: block;	overflow: hidden;position: absolute !important;	left: -9999px;	width: 1px;	height: 1px;font-size: 0;line-height: 0;	text-indent: -9999px;}
+
+.modal h3 {display: block;font-size: 1.17em;margin-block-start: 1em;margin-block-end: 1em;margin-inline-start: 0px; margin-inline-end: 0px;font-weight: bold;}
+.modal p {display: block; margin-block-start: 0.7em; margin-block-end: 0.7em; margin-inline-start: 0px; margin-inline-end: 0px;font-weight:300;}
+
+@media (max-width: 767px){
+	.modal .popup{ max-width:90%}
+}
+*/
+</style>
+
+<div class="modal bg" data-ui="LayerPop">
+    <div class="popup" id="layer2">
+        <h2><strong>공지사항</strong></h2>
+        <div class="con">
+            <h3></h3>
+            <div class="txt" style="height:215px;overflow-y:auto;word-break:break-word;">
+            </div>
+        </div>
+        <!-- //내용 -->
+        <div class="popfoot">
+	    <a id="show-detail" style="float:left;display:none;margin-top:5px;"> >> 자세히보기</a>
+            <label><input type="checkbox" id="displayChk"> <span>다시보지 않기</span></label><button type="button" class="close" data-element="closebtn">닫기</button>
+        </div>
+
+        <button type="button" class="close" data-element="closebtn">
+            <span class="ico">
+                <svg  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19px" height="19px">
+                    <path fill-rule="evenodd"  fill="rgb(0, 0, 0)"  d="M8.584,9.499 L0.170,17.970 C-0.064,18.205 -0.064,18.587 0.170,18.822 C0.287,18.940 0.440,18.998 0.593,18.998 C0.746,18.998 0.899,18.940 1.016,18.822 L9.493,10.287 L17.970,18.822 C18.087,18.940 18.240,18.998 18.393,18.998 C18.546,18.998 18.699,18.940 18.816,18.822 C19.050,18.587 19.050,18.205 18.816,17.970 L10.403,9.499 L18.822,1.022 C19.055,0.787 19.055,0.406 18.822,0.170 C18.588,-0.065 18.209,-0.065 17.976,0.170 L9.493,8.711 L1.010,0.171 C0.776,-0.064 0.398,-0.064 0.164,0.171 C-0.070,0.406 -0.070,0.787 0.164,1.023 L8.584,9.499 Z"/>
+                </svg>
+            </span>
+            <span class="blind">닫기
+            </span>
+        </button>
+    </div>
+</div>
+
+<input type="hidden" id="noticeId_noticeLayer"/>
+<script>
+
+$("[data-ui=LayerPop]").each(function() {		
+		var $ui = $(this);		
+		var $close = $ui.find("[data-element=closebtn]");
+		$close.on("click", function(_e) {
+			_e.preventDefault();				
+			$ui.removeClass("active");
+			$ui.css("display","");
+			$("body, html").css("overflow-y","");			
+		});
+});
+
+</script>

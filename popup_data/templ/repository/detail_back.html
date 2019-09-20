@@ -1,0 +1,70 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from django.utils import timezone
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">공지사항상세</%block>
+
+
+
+<div class="page-header">
+    <h1>공지사항상세</h1>
+</div>
+<%block name="content">
+<fieldset class="module aligned">
+    <div class="container notice-detail">
+         <!-- markup 수정 2018.0510 -->
+         <div class="pkg_board">                                      
+            <table class="table-vw2" summary="자료실 Table">
+                <caption>자료실 Table</caption>
+                <colgroup>
+                    <col style="width:120px">
+                    <col >
+                    <col style="width:20%">
+                </colgroup>
+                <thead>
+                  <tr>
+                      <!-- 제목 -->
+                      <td colspan="2">${noticeDetail.title}</th>
+                      <!-- 날짜 -->
+                      <td class="ar"><time id="reg_date" style="bottom: 30px;" title="작성일">${timezone.localtime(noticeDetail.created_date).strftime('%Y-%m-%d %H:%M:%S')}</time></td>
+                  </tr>
+                </thead>
+                <tbody>
+                
+                    <tr>
+                        <td colspan="3" class="tdContent">
+                            <div class="txtarea_wrap">
+                                <pre><%include file="contents.html" /></pre>
+                              </div>
+                        </td>
+                    </tr>
+                </tbody>
+                <!-- <tfoot>
+                  <tr>
+                      <th scope="row"><p class="prevtxt">이전글</p></th>
+                      <td colspan="2">이전 글이 없습니다.</td>
+                  </tr>
+                  <tr>
+                      <th scope="row"><p class="nexttxt">다음글</p></th>
+                      <td colspan="2"><a href="javascript:;">총액 결합할인 대상 요금제 확대 및 인터넷 신규가입제한 안내</a></td>
+                  </tr>
+                </tfoot> -->
+            </table>
+        </div>
+
+        <!-- markup 수정 2018.0510 class 추가 -->
+ 
+        <div class="form-row field-button btn_list" align="center"><span><a href="notice_list?page=${page}&searchData=${searchData}">목록</a></span></div>
+
+    </div>
+</fieldset>
+</%block>

@@ -1,0 +1,13 @@
+<%!
+    import re
+%>
+<%
+    isSearch = re.search(r"[<!]|[</]|[/>]", noticeDetail.contents)
+     
+    if bool(isSearch) == False:
+        contents = noticeDetail.contents.replace("\r\n","</br>")
+    else:
+        contents = noticeDetail.contents.replace("\r\n","")
+    endif
+%>
+${contents}

@@ -1,0 +1,35 @@
+<%page expression_filter="h"/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("notice")}</%block>
+<div class="page-header">
+    <h1>공지사항등록</h1>
+</div>
+<%block name="content">
+<form method="POST" action="">
+<input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}" />
+% if mode == 'update':
+    <!--/br>
+    page >>> ${page}<br>
+    noticeId >>> ${noticeId}<br>
+    notice.id >>> ${notice.id}<br>
+    notice.title >>> ${notice.title}<br>
+    mode >>> ${mode}
+    </br-->
+    <input type="hidden" id="id_mode" name="mode" value="${mode}"/>
+    <input type="hidden" id="id_page" name="page" value="${page}"/>
+    <input type="hidden" id="id_noticeId" name="noticeId" value="${noticeId}"/>
+% endif
+
+    ${form.as_p()}
+    <input type="submit" value="등록"/>
+</form>
+</%block>

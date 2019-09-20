@@ -1,0 +1,147 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<%inherit file="../main.html" />
+<style>
+    /* table */
+    .search-field-wrapper{}
+    .search-field-wrapper select{}
+    .search-field-wrapper input{height:40px;border:1px solid #ccc;}
+    /*.table-bordered div.search-field-wrapper{padding-right:75px;}*/
+    .search-field-wrapper .search-button,
+    .search-field-wrapper .search-button:hover, .search-field-wrapper .search-button:focus{height:40px;padding:0 20px;line-height:38px;font-size:14px;font-weight:bold;border-radius:0;}
+
+    .notice-search-bar.search-bar{text-align:right;}
+    
+    /* 자료실 */
+    .page-header{border-bottom:0;padding-top:30px;padding-bottom:0;}
+    .page-header h1{max-width:1200px;margin:auto;text-align:left; border-bottom: 1px solid #ccc;padding-bottom: 15px;margin-bottom: 10px;}
+
+    .container{padding:0 0 120px;}
+    .container.conDetails{border-top:1px solid #9a9da3;margin-top: 40px;}
+    table.table-bordered{width:100%;border:0;}
+    table.table-bordered thead tr th{background-color:#f3f3f3;font-size:14px;height:55px;border:0;border-bottom:1px solid #ddd;border-top:1px solid #1b1a1a;}
+    table.table-bordered tbody tr td{background-color:#fff;padding:20px 0;border:0;border-bottom:1px solid #ddd;color:#757575;font-size:15px;}
+    table.table-bordered tbody tr td a{color:#757575;}
+    table.table-bordered tbody tr td strong{margin-right:5px;}
+    table.table-bordered tbody tr td:first-child{text-align:center;}
+    table.table-bordered tbody tr td div p{height:21px;line-height:20px;margin-bottom:3px;cursor:pointer;padding-left:70px;width:335px;position:relative;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+    table.table-bordered tbody tr td div p:first-child{margin-bottom:3px;}
+    table.table-bordered tbody tr td div p:after{content:'';position:absolute;left:0;top:50%;margin-top:-10px;width:50px;height:20px;line-height:20px;color:#fff;text-align:center;font-size:11px;border-radius:3px;}
+
+    .pagination{text-align:center;padding-top:20px;width:70%;}
+    .pagination span{display:inline-block;padding:0 5px;vertical-align:top;color:#0075b4;line-height:34px;font-weight:bold;}
+    .pagination span > a{min-width:16px;height:40px;color:#666;display:block;cursor:pointer;font-weight:normal;}
+    .pagination span:first-child {margin-right:10px;cursor:pointer;width:40px;height:40px;text-indent:-9999px;background:url('/static/my-theme/images/slkit_left.png') #fff 50% 50% no-repeat;}
+    .pagination span:last-child {margin-right:10px;cursor:pointer;width:40px;height:40px;text-indent:-9999px;background:url('/static/my-theme/images/slkit_right.png') #fff 50% 50% no-repeat;}
+a:hover, a:focus, a:visited:hover, a:visited:focus {
+    color: #065683;
+    text-decoration: underline;
+}
+</style>
+<%block name="pagetitle">자료실</%block>
+
+<div class="page-header">
+    <h1>자료실</h1>
+</div>
+<%block name="content">
+<div class="container notice-list" align="center">
+<table id="result_list" class="table table-bordered" width="80%" border="1">
+<tr align="right">
+    <td>
+        <div id="notice-search-bar" class="search-bar notice-search-bar" role="search" aria-label="Notice">
+            <form class="search-form" action="" method="get">
+                <div class="search-field-wrapper">
+                    <input type="text" name="searchData" value="${searchData}">
+                    <button type="submit" class="search-button" title="${_('Search')}">
+                        <span class="icon fa fa-search" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="cancel-button" title="${_('Clear search')}">
+                        <span class="icon fa fa-remove" aria-hidden="true"></span>
+                    </button>
+                    
+                </div>
+            </form>
+        </div>
+    </td>
+</tr>
+</table>
+<table id="result_list" class="table table-bordered" width="80%" border="1">
+<thead>
+<tr>
+<th scope="col" class="sortable column-id" width="10%">  
+   <div class="text">${_("No.")}</div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="sortable column-title" width="60%">
+   <div class="text">${_("Title")}</div>
+   <div class="clear"></div>
+</th>
+<th scope="col" class="sortable column-created_date" width="10%">
+   <div class="text">${_("Date")}</div>
+   <div class="clear"></div>
+</th>
+</tr>
+</thead>
+<tbody>
+    % if noticeList:
+        <%  
+        index = 1
+        %>
+        % for notice in noticeList:
+            <tr class="row1">
+                <td class="field-id" align="center">${index}</td>
+                <td class="field-title">
+                    <a href="repository_detail?noticeId=${notice.id}&page=${page}&searchData=${searchData}">
+                    % if len(notice.title) > 50:
+                        ${"{0}...".format(notice.title[:50])}
+                    % else:
+                        ${notice.title}
+                    % endif 
+                    </a>
+                </td>
+                <td class="field-created_date nowrap" align="center">${notice.created_date.strftime("%Y-%m-%d")}</td>
+            </tr>
+	    <% 
+            index += 1
+            %>
+        % endfor
+    % else:
+        <tr align="center"><td colspan="3">조회된 결과가 없습니다.</td></tr>
+    % endif
+</tbody>
+</table>
+<div class="pagination">
+    <div class="section-inner clearfix">
+        <p>
+            % if startPage != 1:
+                <span><a href="?page=${startPage - 1}&searchData=${searchData}">&lt; prev</a></span>
+            % else:
+                <span>&lt; prev</span>
+            % endif
+
+            % for i in bottomPages:
+                % if i == page:
+                    <span>${i}</span>
+                % else:
+                    <span><a href="?page=${i}&searchData=${searchData}">${i}</a></span>
+                % endif
+            % endfor
+    
+            % if endPage < totalPageCount:
+                <span><a href="?page=${endPage + 1}&searchData=${searchData}">next &gt;</a></span>
+            % else:
+                <span>next &gt;</span>
+            % endif
+        </p>
+    </div>
+</div>
+</div>
+</%block>

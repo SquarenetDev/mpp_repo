@@ -1,0 +1,124 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+    import os
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from django.utils import timezone
+    import sys
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<%inherit file="../main.html" />
+
+<style>
+    .page-header{border-bottom:0;padding-top:30px;padding-bottom:0;}
+    .page-header h1{max-width:1200px;margin:auto;text-align:left; border-bottom: 1px solid #ccc;padding-bottom: 15px;margin-bottom: 10px;}
+
+a:hover, a:focus, a:visited:hover, a:visited:focus {
+    color: #065683;
+    text-decoration: underline;
+}
+.btn_list a {
+    display: inline-block;
+    color: #fff;
+    margin-top: 20px;
+    width: 160px;
+    height: 40px;
+    line-height: 38px;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #333;
+}
+.pkg_board .table-vw2 {
+    width: 100%;
+    border-top: 2px solid #333;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.repository-detail{margin-top:20px;}
+/* view */
+.pkg_board .table-vw2 {width:100%;border-top:2px solid #333;}
+.pkg_board .table-vw2 thead td{height:59px;padding:0 30px;font-size:15px;color:#757575;background:#eff1f6;border-bottom:1px solid #ccc;vertical-align:middle;border-bottom:1px solid #333;}
+.pkg_board .table-vw2 thead td:first-child{font-weight:bold;color:#333;}
+.pkg_board .table-vw2 tbody th{height:59px;padding:0 20px;font-size:15px;color:#333;font-weight:700;text-align:left;border-bottom:1px solid #e5e5e5;}
+.pkg_board .table-vw2 tbody td{padding:5px 10px;font-size:13px;color:#757575;position:relative;border-bottom:1px solid #e5e5e5;vertical-align:middle;}
+.pkg_board .table-vw2 tbody td .txtarea_wrap{min-height:200px;line-height:20px;white-space:pre-line;}
+.pkg_board .table-vw2 tbody td .txtarea_wrap textarea{min-height:320px;resize:vertical;}
+.pkg_board .table-vw2 tbody td .txtarea_wrap.txtarea-view{min-height:auto;padding:30px 10px;}
+.pkg_board .table-vw2 tfoot th{height:59px;padding:0 20px;font-size:15px;color:#333;font-weight:700;text-align:left;border-bottom:1px solid #e5e5e5;}
+.pkg_board .table-vw2 tfoot td{padding:5px 10px;font-size:13px;color:#757575;position:relative;border-bottom:1px solid #e5e5e5;vertical-align:middle;}
+.pkg_board .table-vw2 tfoot td a{color:#757575;}
+caption{height:0;text-indent:-9999px;}
+</style>
+
+<%block name="pagetitle">공지사항상세</%block>
+<div class="page-header">
+    <h1>공지사항상세</h1>
+</div>
+<%block name="content">
+<fieldset class="module aligned">
+    <div class="container repository-detail">
+         <div class="pkg_board">                                      
+            <table class="table-vw2" summary="공지사항 Table">
+                <caption>공지사항 Table</caption>
+                <colgroup>
+                    <col style="width:120px">
+                    <col >
+                    <col style="width:20%">
+                </colgroup>
+                <thead>
+                  <tr>
+                      <!-- 제목 -->
+                      <td colspan="2">${noticeDetail.title}</th>
+                      <!-- 날짜 -->
+                      <td class="ar" style="text-align: right"><time id="reg_date" style="bottom: 30px;text-align: right;" title="작성일">${timezone.localtime(noticeDetail.created_date).strftime('%Y-%m-%d %H:%M:%S')}</time></td>
+                  </tr>
+                </thead>
+                <tbody>
+                    % if noticeDetail.attachments_set.all().count() > 0:
+                    <tr>
+                        <th scope="row">첨부파일</th>
+                        <td colspan="2">
+                        % for file in noticeDetail.attachments_set.all():
+                            <li>
+                                <a onclick="goFile('${file.file.url.encode('utf8')}')">${os.path.basename(file.file.name)}</a>
+                            </li>
+                        % endfor
+                        </td>
+                    </tr>
+                    % endif
+                    <tr>
+                        <td colspan="3" class="tdContent">
+                            <div class="txtarea_wrap">
+                                <pre><%include file="contents.html" /></pre>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                
+            </table>
+        </div>
+        <div class="form-row field-button btn_list" align="center"><span><a href="notice_list?page=${page}&searchData=${searchData}">목록</a></span></div>
+    </div>
+</fieldset>
+</%block>
+
+<script>
+function goFile(file){
+//alert(file)
+var goFileUrl = file.replace( 'https://dminehomesecuresa.blob.core.windows.net/uploads', '' )
+
+//alert(goFileUrl)
+window.open('http://40.115.185.175:8080/noticeFile'+ goFileUrl, '_blank'); 
+
+}
+</script>

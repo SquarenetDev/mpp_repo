@@ -1,0 +1,79 @@
+## mako
+<%page expression_filter="h"/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+    from django.utils import timezone
+%>
+<%namespace name='static' file='../static_content.html'/>
+
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("notice")}</%block>
+
+<script type="text/javascript">
+    /**
+    $(document).ready(function(){      
+        var textArea = document.createElement("textarea");
+        textArea.innerHTML = "${noticeDetail.contents}";
+        
+        document.getElementById("contents").innerHTML = textArea.textContent;
+    });
+    */
+</script>
+<div class="page-header">
+    <h1>공지사항상세</h1>
+</div>
+<%block name="content">
+<fieldset class="module aligned">
+    <div class="container notice-detail">
+        <!--div class="form-row field-id">
+            <div>
+                <label class="required" for="id_id">공지번호</label>
+                <input class="vTextField" id="id_id" maxlength="255" name="id" type="text" value="${noticeDetail.id}" readonly/>
+            </div>
+        </div>
+        <div class="form-row field-title">
+            <div>
+                <label class="required" for="id_title">제목</label>
+                <input class="vTextField" id="id_title" maxlength="255" name="title" type="text" value="${noticeDetail.title}" readonly/>
+            </div>
+        </div>
+        <div class="form-row field-contents">
+            <textarea class="vLargeTextField" cols="50" id="id_contents" name="contents" rows="50" readonly="readonly">${noticeDetail.contents}</textarea>
+        </div>
+        <div class="form-row field-writer">
+            <div>
+                <label class="required" for="id_writer">작성자</label>
+                <input class="vTextField" id="id_writer" maxlength="255" name="title" type="text" value="${noticeDetail.writer}" readonly/>             
+            </div>  
+        </div>
+        <div class="form-row field-writer">
+            <div>
+                <label class="required" for="id_created_date">등록일</label>
+                <input class="vTextField" id="id_created_date" maxlength="255" name="created_date" type="text" value="${timezone.localtime(noticeDetail.created_date).strftime('%Y-%m-%d %H:%M:%S')}" readonly/>
+            </div>  
+        </div>
+        <div class="form-row field-writer">
+            <div>
+                <label class="required" for="id_updated_date">수정일</label>
+                <input class="vTextField" id="id_updated_date" maxlength="255" name="updated_date" type="text" value="${timezone.localtime(noticeDetail.updated_date).strftime('%Y-%m-%d %H:%M:%S')}" readonly/>
+            </div>  
+        </div-->
+         <ul>
+            <li class="title">
+                <h3 id="title" title="제목">${noticeDetail.title}</h3>
+                <time id="reg_date" style="bottom: 30px;" title="작성일">${timezone.localtime(noticeDetail.created_date).strftime('%Y-%m-%d %H:%M:%S')}</time>
+            </li>
+            <li class="contents" id="contents" title="내용">
+                <!--div overflow:scroll contentEditable="false"><pre>${noticeDetail.contents}</pre></div-->
+                <%include file="contents.html" />
+            </li>
+        </ul>
+        <div class="form-row field-button" align="center"><span><a href="notice_list?page=${page}&searchData=${searchData}">목록</a></span></div>
+        <!--div class="form-row field-button" align="center"><span><a href="notice_update?noticeId=${noticeDetail.id}&page=${page}">수정</a></span></div-->
+    </div>
+</fieldset>
+</%block>
