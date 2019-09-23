@@ -5,9 +5,9 @@ theme_name="$1"
 echo $theme_name
 
 
-if [ "$theme_name" == "" ];
+if [ "$theme_name" == "" ]; then
         echo "Please insert parameter theme-name"
-        then exit
+        exit
 fi
 
 
