@@ -10,7 +10,8 @@ echo $theme_name
 #        exit
 #fi
 
-
+sudo ./startapi.sh << EOF
+EOF
 
 
 echo '------------------------------------- copy aps folder start'
@@ -51,3 +52,6 @@ echo '------------------------------------- modify urls.py done'
 #echo '------------------------------------- migrtation'
 #cd /edx/app/edxapp/edx-platform/lms/djangoapps
 #/edx/bin/python.edxapp ../../manage.py lms --setting aws startapp customapi
+
+sudo ./migrateapi.sh << EOF
+EOF
