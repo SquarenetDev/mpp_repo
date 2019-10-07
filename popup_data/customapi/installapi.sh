@@ -10,13 +10,13 @@ echo $theme_name
 #        exit
 #fi
 
-sudo ./startapi.sh << EOF
-EOF
+#sudo ./startapi.sh << EOF
+#EOF
 
 
 echo '------------------------------------- copy aps folder start'
 
-sudo cp -rf ./aps/customapi/ /edx/app/edxapp/edx-platform/lms/djangoapps/
+sudo cp -rf ../aps/customapi/ /edx/app/edxapp/edx-platform/lms/djangoapps/
 #sudo cp -rf ./aps/repository /edx/app/edxapp/edx-platform/lms/djangoapps/
 
 echo '------------------------------------- copy aps folder done'
@@ -43,7 +43,7 @@ echo '------------------------------------- modify common.py done'
 echo '------------------------------------- modify urls.py start'
 
 sudo chmod -R 777 /edx/app/edxapp/edx-platform/lms
-sudo sed 's,\(notice_detail")\,\),\1\n''\ ''\ ''\ ''\ ''url(r'\''\^customApi/getServerInfo'\''\, '\''customApi.views.getServerInfo'\''\, name="customApi/getServerInfo")\,\n'',g' /edx/app/edxapp/edx-platform/lms/urls.py > /edx/app/edxapp/edx-platform/lms/urls_t.py
+sudo sed 's,\(notice_detail")\,\),\1\n''\ ''\ ''\ ''\ ''url(r'\''\^customApi/getServerInfo'\''\, '\''customapi.views.getServerInfo'\''\, name="customApi/getServerInfo")\,\n'',g' /edx/app/edxapp/edx-platform/lms/urls.py > /edx/app/edxapp/edx-platform/lms/urls_t.py
 sudo mv /edx/app/edxapp/edx-platform/lms/urls_t.py /edx/app/edxapp/edx-platform/lms/urls.py
 sudo chmod 777 /edx/app/edxapp/edx-platform/lms/urls.py
 
@@ -53,5 +53,5 @@ echo '------------------------------------- modify urls.py done'
 #cd /edx/app/edxapp/edx-platform/lms/djangoapps
 #/edx/bin/python.edxapp ../../manage.py lms --setting aws startapp customapi
 
-sudo ./migrateapi.sh << EOF
-EOF
+#sudo ./migrateapi.sh << EOF
+#EOF
