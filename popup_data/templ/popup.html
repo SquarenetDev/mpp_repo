@@ -1,3 +1,6 @@
+
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap&subset=korean" rel="stylesheet">
+
 <%page expression_filter="h"/>
 <%namespace name='static' file='static_content.html'/>
 <%!
@@ -28,8 +31,9 @@ function openNoticePop(el, result){
 	    $("#show-detail").attr("href",result.detail_url).css("display","block");
         }
 	
-	$(".con .txt").html(result.contents);
-
+//	$(".con .txt").html(result.contents);
+	var doc = $('.txt').contents().find('body');
+	doc.html(result.contents);
 
         $(document).on('click', '#displayChk', function(){
             if( $('#displayChk').prop("checked") ){
@@ -38,6 +42,7 @@ function openNoticePop(el, result){
             }
         });
  	$(".modal").addClass("active");
+	$("body, html").css("overflow-y","hidden");
    }
 
     var basicName = "showCookies_"; //쿠키 공통 명칭
@@ -69,14 +74,15 @@ function openNoticePop(el, result){
             url: "/customApi/checkPopup/",
             method: "POST",
             data: {
-                'idList': idListStr
+                'idList': idListStr,
+				'csrfmiddlewaretoken': '${csrf_token}'
             },
             success: function(result){
 //                console.log(result);
 //                console.log(result.id);
                 if(result.id != null && result.id != ""){
                     $('#noticeId_noticeLayer').val(result.id);
-            	    $("body, html").css("overflow-y","hidden");
+
                     if(getCookie(basicName+$("#noticeId_noticeLayer").val()) != "N")
                         openNoticePop('#layer2', result);
                 }
@@ -134,12 +140,12 @@ function openNoticePop(el, result){
 .modal .popfoot{text-align:right; padding:25px;background: rgba(30,30,30,0.105);}
 .modal .popfoot .close{ font-size:13px; line-height:30px; padding:0 15px; border:none; background:#ed4043; color:#fff; font-weight:500;box-shadow: none;}
 .modal .popfoot label{ color:#000; font-weight:400; font-size:1rem; padding-right:10px }
-.modal .popup > .close{ position:absolute; right:20px; top:20px; border:none; background:none}
+.modal .popup > .close{ position:absolute; right:20px; top:25px; border:none; background:none}
 .modal .popup > .close svg{transform: scale(1.4) } 
 .modal .popup > .close path{fill:#fff}
 .modal p{ font-weight:300; letter-spacing: 0.01rem;font-size:13px;}
 .modal p strong{font-weight: 700; color:#01aeb2 } 
-.modal div.txt p strong{ color: #000; font-size: 1.15rem} 
+.modal .txt p strong{ color: #000; font-size: 1.15rem} 
 .modal .popup .con{ padding: 30px} 
 .modal .popup .con h3{ color:  #000000; font-size: 1.1rem; border-bottom: 1px solid  #000000; margin: 0; padding: 10px 0 10px 0; margin-bottom: 20px} 
 .blind {display: block;	overflow: hidden;position: absolute !important;	left: -9999px;	width: 1px;	height: 1px;font-size: 0;line-height: 0;	text-indent: -9999px;}
@@ -180,12 +186,13 @@ div#layer2 label input {vertical-align:middle;}
         <h2><strong>공지사항</strong></h2>
         <div class="con">
             <h3></h3>
-            <div class="txt" style="height:215px;overflow-y:auto;word-break:break-word;">
-            </div>
-        </div>
+<!--            <div class="txt" style="height:215px;overflow-y:auto;word-break:break-word;"></div> -->
+            <iframe class="txt" style="height:215px;overflow-y:auto;word-break:break-word;border:0;width:100%;"></iframe>
+       </div>
         <!-- //내용 -->
         <div class="popfoot">
 	    <a id="show-detail" style="float:left;display:none;margin-top:5px;"> >> 자세히보기</a>
+           											  
             <label><input type="checkbox" id="displayChk"> <span>다시보지 않기</span></label><button type="button" class="close" data-element="closebtn">닫기</button>
         </div>
 

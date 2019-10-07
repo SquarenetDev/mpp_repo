@@ -47,6 +47,3 @@ sudo mv /edx/app/edxapp/edx-platform/lms/urls_t.py /edx/app/edxapp/edx-platform/
 sudo chmod 777 /edx/app/edxapp/edx-platform/lms/urls.py
 
 echo '------------------------------------- modify urls.py done'
-
-sudo sed -e 's,\(<%include file="${courses_list}" />\),\1\n''\ ''\ ''\ ''\ ''<%include file="popup.html" />,g' /edx/app/edxapp/themes/$theme_name/lms/templates/index.html > /edx/app/edxapp/themes/$theme_name/lms/templates/index_t.html
-sudo mv /edx/app/edxapp/themes/$theme_name/lms/templates/index_t.html /edx/app/edxapp/themes/$theme_name/lms/templates/index.html
