@@ -28,7 +28,7 @@ def getServerInfo(request):
     context['allUserCount'] = AuthUser.objects.count()
     context['loginUserCount'] = AuthUser.objects.filter(last_login__isnull=False).count()
 #    context['loginUserCountForWeek'] = AuthUser.objects.filter(last_login__isnull=False).exclude(last_login__gt=datetime.now() - tim$
-    context['loginUserCountForWeek'] = AuthUser.objects.filter(last_login__isnull=False).exclude(last_login__gt=datetime.now() - timedelta(days=7)).count()
+    context['loginUserCountForWeek'] = AuthUser.objects.filter(last_login__isnull=False).filter(last_login__gt=datetime.now() - timedelta(days=7)).count()
 
     import psutil
     import math
