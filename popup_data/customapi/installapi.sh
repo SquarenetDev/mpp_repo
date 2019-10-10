@@ -33,19 +33,19 @@ echo '------------------------------------- copy aps folder done'
 
 echo '------------------------------------- modify common.py start'
 
-sudo chmod -R 777 /edx/app/edxapp/edx-platform/lms
-sudo sed -e 's,\(INSTALLED_APPS = (\),\1\n''\ ''\ ''\ ''\ '\''customapi'\''\,'',g' /edx/app/edxapp/edx-platform/lms/envs/common.py > /edx/app/edxapp/edx-platform/lms/envs/com_t.py
-sudo mv /edx/app/edxapp/edx-platform/lms/envs/com_t.py  /edx/app/edxapp/edx-platform/lms/envs/common.py
-sudo chmod 777 /edx/app/edxapp/edx-platform/lms/envs/common.py
+#sudo chmod -R 777 /edx/app/edxapp/edx-platform/lms
+#sudo sed -e 's,\(INSTALLED_APPS = (\),\1\n''\ ''\ ''\ ''\ '\''customapi'\''\,'',g' /edx/app/edxapp/edx-platform/lms/envs/common.py > /edx/app/edxapp/edx-platform/lms/envs/com_t.py
+#sudo mv /edx/app/edxapp/edx-platform/lms/envs/com_t.py  /edx/app/edxapp/edx-platform/lms/envs/common.py
+#sudo chmod 777 /edx/app/edxapp/edx-platform/lms/envs/common.py
 
 echo '------------------------------------- modify common.py done'
 
 echo '------------------------------------- modify urls.py start'
 
-sudo chmod -R 777 /edx/app/edxapp/edx-platform/lms
-sudo sed 's,\(notice_detail")\,\),\1\n''\ ''\ ''\ ''\ ''url(r'\''\^customApi/getServerInfo'\''\, '\''customapi.views.getServerInfo'\''\, name="customApi/getServerInfo")\,\n'',g' /edx/app/edxapp/edx-platform/lms/urls.py > /edx/app/edxapp/edx-platform/lms/urls_t.py
-sudo mv /edx/app/edxapp/edx-platform/lms/urls_t.py /edx/app/edxapp/edx-platform/lms/urls.py
-sudo chmod 777 /edx/app/edxapp/edx-platform/lms/urls.py
+#sudo chmod -R 777 /edx/app/edxapp/edx-platform/lms
+#sudo sed 's,\(notice_detail")\,\),\1\n''\ ''\ ''\ ''\ ''url(r'\''\^customApi/getServerInfo'\''\, '\''customapi.views.getServerInfo'\''\, name="customApi/getServerInfo")\,\n'',g' /edx/app/edxapp/edx-platform/lms/urls.py > /edx/app/edxapp/edx-platform/lms/urls_t.py
+#sudo mv /edx/app/edxapp/edx-platform/lms/urls_t.py /edx/app/edxapp/edx-platform/lms/urls.py
+#sudo chmod 777 /edx/app/edxapp/edx-platform/lms/urls.py
 
 echo '------------------------------------- modify urls.py done'
 
@@ -55,3 +55,5 @@ echo '------------------------------------- modify urls.py done'
 
 #sudo ./migrateapi.sh << EOF
 #EOF
+
+sudo /edx/bin/supervisorctl restart edxapp:lms
